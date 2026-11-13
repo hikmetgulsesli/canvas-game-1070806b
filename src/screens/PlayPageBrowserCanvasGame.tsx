@@ -10,19 +10,32 @@
 
 export type PlayPageBrowserCanvasGameActionId = "start-game-1";
 
+export type PlayPageBrowserCanvasGameStatus = "idle" | "playing";
+
 export interface PlayPageBrowserCanvasGameProps {
   actions?: {
     "start-game-1"?: () => void;
   };
 
+  /** Current score (STATE_SCORE_STATE./score). */
+  score?: number;
+  /** Persisted high score (STATE_HIGH_SCORE_STATE./value); null when unknown. */
+  highScore?: number | null;
+  /** Application status (STATE_APP_STATE./status). */
+  status?: PlayPageBrowserCanvasGameStatus;
 }
 
 export type PlayPageBrowserCanvasGameActionCallbacks = NonNullable<PlayPageBrowserCanvasGameProps["actions"]>;
 
-export function PlayPageBrowserCanvasGame({ actions }: PlayPageBrowserCanvasGameProps) {
+export function PlayPageBrowserCanvasGame({ actions, score = 0, highScore = null, status = "idle" }: PlayPageBrowserCanvasGameProps) {
+  const scoreValue = String(score);
+  const highScoreValue = highScore === null || highScore === undefined ? "" : String(highScore);
+  const highScoreText = highScore === null || highScore === undefined ? "—" : String(highScore);
+  const statusText = status === "playing" ? "Game started" : "Idle";
+
   return (
     <>
-      <div data-surface-id="SURF_PLAY_PAGE" data-route="/play" className="flex-1 flex flex-col w-full min-h-screen" data-setfarm-element-ref="E000001" data-observable-refs="OBS_ENTER_PLAY_OBS_PLAY_ROUTE_ACTIVE OBS_START_GAME_OBS_STAY_ON_PLAY_ROUTE">
+        <div data-surface-id="SURF_PLAY_PAGE" data-route="/play" className="flex-1 flex flex-col w-full min-h-screen" data-setfarm-element-ref="E000001" data-observable-refs="OBS_ENTER_PLAY_OBS_PLAY_ROUTE_ACTIVE OBS_START_GAME_OBS_STAY_ON_PLAY_ROUTE">
           {/* Header bar */}
           <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -37,15 +50,15 @@ export function PlayPageBrowserCanvasGame({ actions }: PlayPageBrowserCanvasGame
       
             <div className="flex items-center space-x-4">
               {/* High Score Display Surface */}
-              <div data-surface-id="SURF_HIGH_SCORE_DISPLAY" className="bg-slate-800/80 border border-slate-700/80 rounded-xl px-5 py-2.5 flex flex-col items-center min-w-[120px]" data-setfarm-element-ref="E000002" data-observable-refs="OBS_START_GAME_OBS_HIGH_SCORE_PERSISTED">
+              <div data-surface-id="SURF_HIGH_SCORE_DISPLAY" className="bg-slate-800/80 border border-slate-700/80 rounded-xl px-5 py-2.5 flex flex-col items-center min-w-[120px]" data-setfarm-element-ref="E000002" data-observable-refs="OBS_START_GAME_OBS_HIGH_SCORE_PERSISTED" data-value={highScoreValue}>
                 <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">High Score</span>
-                <span className="text-2xl font-black text-amber-400 tracking-tight" data-value="0">0</span>
+                <span className="text-2xl font-black text-amber-400 tracking-tight" data-value={highScoreValue}>{highScoreText}</span>
               </div>
       
               {/* Score Display Surface */}
-              <div data-surface-id="SURF_SCORE_DISPLAY" className="bg-slate-800/80 border border-slate-700/80 rounded-xl px-5 py-2.5 flex flex-col items-center min-w-[120px]" data-setfarm-element-ref="E000003" data-observable-refs="OBS_START_GAME_OBS_SCORE_VALUE">
+              <div data-surface-id="SURF_SCORE_DISPLAY" className="bg-slate-800/80 border border-slate-700/80 rounded-xl px-5 py-2.5 flex flex-col items-center min-w-[120px]" data-setfarm-element-ref="E000003" data-observable-refs="OBS_START_GAME_OBS_SCORE_VALUE" data-value={scoreValue}>
                 <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">Score</span>
-                <span className="text-2xl font-black text-emerald-400 tracking-tight" data-value="0">0</span>
+                <span className="text-2xl font-black text-emerald-400 tracking-tight" data-value={scoreValue}>{scoreValue}</span>
               </div>
             </div>
           </header>
@@ -89,7 +102,7 @@ export function PlayPageBrowserCanvasGame({ actions }: PlayPageBrowserCanvasGame
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
                 <div className="text-sm font-medium text-slate-300">
-                  Status: <span className="text-emerald-400 font-semibold">Game started</span>
+                  Status: <span className="text-emerald-400 font-semibold">{statusText}</span>
                 </div>
               </div>
       
